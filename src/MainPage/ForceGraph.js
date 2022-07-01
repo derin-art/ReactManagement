@@ -10,24 +10,27 @@ import uuid from "draft-js/lib/uuid";
 
 
 function ForceGraph({datad, setRenderData,  timesRan}){
+  let localModels
 
-  
+  if(JSON.parse(localStorage.getItem("models")) === {}){
+     localStorage.setItem("models", JSON.stringify({}))
+  }
+
+  localModels = JSON.parse(localStorage.getItem("models"))
+
     const fgRef = useRef();
-    
+    const [modelName, setModelName] = useState("")
+    const [localModelsState, setLocalModelsState] = useState(localModels)
     const [itemsToBeDeleted, setItemsToBeDeleted] = useState(1)
     const [deletePopup, setDeletePopup] = useState(false)
     const [deleteCertainty, setDeleteCertainty] = useState(false)
     const [openNode, setOpenNode] = useState(true)
-    const [hoveredNode, setHoveredNode] = useState(null)
-    const [coords, setCoords] = useState({x: 0, y: 0});
     const [globalCoords, setGlobalCoords] = useState({x: 0, y: 0});
     const [graphData, setGraphData] = useState()
-    const [modalHovered, setModalHovered] = useState(false)
     const [NodePosition, setNodePosition] = React.useState()
     const [NodeHierachy, setNodeHierachy] = React.useState(0)
     const [currentNode, setCurrentNode] = React.useState({id: "mmm"})
     const [createConnection, setCreateConnection] = React.useState(false)
-    const [CurrentHovered, setCurrentHovered] = React.useState({id: "mmam"})
     const [newConnection, setNewConnection] = React.useState({id: "", name: "", isProps: false, size: "" , info: "", linkDetails: ""})
   
 
@@ -64,11 +67,34 @@ function ForceGraph({datad, setRenderData,  timesRan}){
     return <div className="w-full h-full">
         <div className="">
             <div className="col-start-1 col-end-3 p-6 row-span-3 h-full w-full relative" onMouseMove={(e)=>{setPosition(e)}}>
+            <div className='flex items-center justify-center p-1'>
+      <div className='bg-black text-white font-Tilt font-bold text-2xl p-3 w-full'>ReactModels</div>
+        </div>
+        <div className="flex justify-between p-1 pb-0">
+          <div>
+          <input className="border font-Tilt border-indigo-200 placeholder:font-Tilt mr-4 p-2" value={modelName} onChange={(e)=>{
+            setModelName(e.target.value)
+        
+          }} type="text" placeholder="input Model name"></input>
+          <button className="font-Tilt border border-black p-2" onClick={()=>{
+            if(!modelName) return
+            let localModels = JSON.parse(localStorage.getItem("models"))
+            localModels = {...localModels, [modelName]: graphData}
+            localStorage.setItem("models", JSON.stringify(localModels))
+
+          }}>Save</button>
+          </div>
+          <div>
+            <div className="font-Tilt">Previous Models
+
+            </div>
+          </div>
+        </div>
             <ForceGraph2D graphData={graphData}  
            enableNodeDrag={true} 
            ref={fgRef}
            width={600}
-           height={600}
+           height={570}
            linkColor= "green"
 
            linkWidth={"4"}
@@ -104,7 +130,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
 
             d3VelocityDecay={1}
             
-            backgroundColor="#F5F5F5"
+            
             linkDirectionalParticleSpeed={() => 1 * 0.01} autoPauseRedraw={false} nodeLabel={(node)=>{
               if(node.info){
                 return node.info
@@ -171,7 +197,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
       
           
            <div>
-             {!openNode &&    <div className={`absolute bg-gray-200 bg-opacity-75 p-8 font-Tilt w-fit text-white rounded-lg border-l-8 border-green-400 text-xs`} style={{position:"absolute", top: JSON.parse(localStorage.getItem("mode")).y - 50, left: JSON.parse(localStorage.getItem("mode")).x}}>
+             {!openNode &&    <div className={`absolute bg-gray-200 bg-opacity-75 p-8 font-Tilt w-fit text-white rounded-lg border-l-8 border-indigo-400 text-xs`} style={{position:"absolute", top: JSON.parse(localStorage.getItem("mode")).y - 50, left: JSON.parse(localStorage.getItem("mode")).x}}>
                   <button onClick={()=>{setOpenNode(true)}} className="bg-red-500 text-white p-1 text-sm rounded-lg mb-2">
                      Close
                    </button>

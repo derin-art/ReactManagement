@@ -32,7 +32,7 @@ export default function Day({day, dateofMonth, month, year, today, startOfThisMo
         <div className="col-start-6"></div>
     </div>
     <button
-        className={`text-center hover:bg-indigo-100 ${openEvent && "font-bold bg-indigo-100"} ${allActivities.length > 0 && "bg-gray-300"} font-bold m-4 text-sm rounded-full w-8 h-8 z-10 ${dateofMonth === D.getDate() ? "text-indigo-500 font-bold": "text-gray-800"}`}
+        className={`text-center hover:bg-indigo-100  ${allActivities.length > 0 && "bg-gray-300"} ${openEvent && "font-bold bg-indigo-100"} font-bold m-4 text-sm rounded-full w-8 h-8 z-10 ${dateofMonth === D.getDate() ? "text-indigo-500 font-bold": "text-gray-800"}`}
         key={`${dateofMonth}-${month}-${year}`}
         onClick = {()=>{
             setOpenEvent(prev => !prev)

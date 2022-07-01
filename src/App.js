@@ -51,7 +51,6 @@ links: []}
   }
 
   return ( <div className='overflow-x-hidden flex flex-col h-screen w-screen p-4'>
-    <Header></Header>
     <div className='flex h-full w-full'>
       <div className='bg-white h-full w-full mr-2 rounded-xl shadow-lg'>
       <ForceGraph datad={renderData} setRenderData={setRenderData} timesRan={timesRan} setTimeRan={setTimeRan} setGraphRan={setGraphRan}></ForceGraph>
@@ -59,32 +58,35 @@ links: []}
 
       <div className='flex flex-col h-full w-2/3 mr-2'>
         <div className='bg-white h-full w-full mb-2 rounded-xl p-4 shadow-xl'>
-        <div className='p-2 bg-black text-white font-Tilt mb-3 text-2xl'>Calender</div>
+        <div className='p-3 bg-black text-white font-Tilt mb-3 text-2xl font-bold'>Calender</div>
         <Calender></Calender>
         </div>
-        <div className='bg-white h-full w-full rounded-xl'>
-
-        </div>
+    
       </div>
 
       <div className='h-full w-3/5 flex flex-col justify-center items-center'>
-        <div className='w-full shadow-xl h-full max-h-[500px] flex justify-center items-center mb-2 rounded-xl bg-white '>
-          <div className='max-w-full p-3'>
-            <div className='text-lg text-white p-2 bg-black font-Tilt flex justify-between'>NoteBook  <button onClick={()=>{
+        <div className='w-full shadow-xl h-full w-[400px] max-h-[500px] flex justify-center items-center mb-2 rounded-xl bg-white '>
+          <div className='p-3'>
+            <div className='text-lg text-white font-Tilt flex items-center justify-center'>
+              <div className='w-[370px] flex justify-between bg-black p-3'>
+              <div className='font-bold'>  NoteBook </div>
+             <button onClick={()=>{
               setNotes(prev => !prev)
               setNoteName("")
               setOldNotes(JSON.parse(localStorage.getItem('notes')))
             }} className={`${!notes && "hidden"}`}>
           {backIcon}
-          </button></div>
+          </button>
+              </div>
+            </div>
             {notes ? <RichEditorExample saveToLocal={saveToLocal} noteName={noteName}></RichEditorExample>: 
             <div className='mt-4'>
-              <input placeholder='Input Name of New Note' className='font-Tilt text-sm p-2 mr-2' onChange={(e)=>{setNoteName(e.target.value)}}></input>
-              <button className='font-Tilt text-sm' onClick={()=>{
+              <input placeholder='Input Name of New Note' className='font-Tilt text-sm p-2 border border-indigo-200 mr-2 placeholder:text-xs' onChange={(e)=>{setNoteName(e.target.value)}}></input>
+              <button className='font-Tilt text-sm border border-black p-2' onClick={()=>{
                 if(!noteName) return
                 setNotes(true)}
-              }>Start</button>
-              <div className='h-48 overflow-auto'>
+              }>Create New Note</button>
+              <div className='h-48 overflow-auto mt-2'>
               {Object.keys(oldNotes).map(item => {
                return <div key={uuid()} className="flex justify-between font-Tilt">
                  <button id={item} onClick={(e)=>{
@@ -114,8 +116,8 @@ links: []}
         </div>
 
         <div className='bg-white h-full w-full flex items-center justify-center rounded-lg shadow-xl'>
-        <button className='text-5xl p-2 font-Tilt'>
-              Launch Force Graph
+        <button className='p-2 font-Tilt'>
+            <Sound></Sound>
             </button>
         </div>
       </div>

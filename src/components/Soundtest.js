@@ -19,30 +19,24 @@ export default function Sound(){
     
   const { status, startRecording, stopRecording, mediaBlobUrl } =
   useReactMediaRecorder({   type: "audio/wav" });  
-  const [editState, setEidtState] = useState(()=> EditorState.createEmpty())
-
-  const saveToLocal = (item)=>{
  
-    localStorage.setItem("text", JSON.stringify(item))
-  }
-  
-  const onChange = (editState)=>{
-    setEidtState(editState)
-    
-  }
+
+
  
 
     return <div>
      <div className="max-w-3xl">
-    {/*  <RichEditorExample saveToLocal={saveToLocal}></RichEditorExample> */}
      </div>
       <div>
-   {/*    <Calender /> */}
-      </div>
+  
+      </div >
        <p>{status}</p>
-      <button onClick={startRecording}>Start Recording</button>
+       <div className='flex flex-col'>
+       <button onClick={startRecording}>Start Recording</button>
       <button onClick={stopRecording}>Stop Recording</button>
+       </div>
       <audio src={mediaBlobUrl} controls loop /> 
+      <button>Save</button>
     </div>
 }
 

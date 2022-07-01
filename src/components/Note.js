@@ -14,7 +14,7 @@ class RichEditorExample extends React.Component {
         isNoteAvailable = true
       }
 
-      this.state = {editorState: isNoteAvailable ? EditorState.createWithContent(convertFromRaw(JSON.parse(content)[this.props.noteName])) :EditorState.createEmpty(), colorCode: "blue"};
+      this.state = {editorState: isNoteAvailable ? EditorState.createWithContent(convertFromRaw(JSON.parse(content)[this.props.noteName])) :EditorState.createEmpty(), colorCode: "yellow"};
 
       this.focus = () => this.refs.editor.focus();
       this.onChange = (editorState) => {
@@ -119,7 +119,7 @@ class RichEditorExample extends React.Component {
           <div className="bg-green-100 border-green-500 hidden"></div>
           <div className="bg-indigo-100 border-indigo-500 hidden"></div>
           <div className="bg-yellow-100 border-yellow-500 hidden"></div>
-          <div className={`${className} bg-${this.state.colorCode}-100 max-h-[400px] -z-10 pt-24 overflow-auto border-l-4 border-${this.state.colorCode}-500 p-2 `} onClick={this.focus}>
+          <div className={`${className} bg-${this.state.colorCode}-100 max-h-[400px] overflow-x-hidden -z-10 pt-24 overflow-y-auto border-l-4 border-${this.state.colorCode}-500 p-2 `} onClick={this.focus}>
             <Editor
               blockStyleFn={getBlockStyle}
               customStyleMap={styleMap}
@@ -127,7 +127,7 @@ class RichEditorExample extends React.Component {
               handleKeyCommand={this.handleKeyCommand}
               keyBindingFn={this.mapKeyToEditorCommand}
               onChange={this.onChange}
-              placeholder="Writing is a great way to sort through thoughts"
+              placeholder="Make short notes"
               spellCheck={true}
             />
           </div>
