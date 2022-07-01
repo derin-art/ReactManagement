@@ -5,34 +5,31 @@ import { ForceGraph2D } from "react-force-graph";
 import ReactImg from "./reactImg4.png"
 import * as d3 from "d3"
 import PreviousMap from "postcss/lib/previous-map";
+import uuid from "draft-js/lib/uuid";
 
 
 
-function ForceGraph({datad, setRenderData}){
-    let isHovered = false
+function ForceGraph({datad, setRenderData,  timesRan}){
+
+  
     const fgRef = useRef();
+    
+    const [itemsToBeDeleted, setItemsToBeDeleted] = useState(1)
+    const [deletePopup, setDeletePopup] = useState(false)
+    const [deleteCertainty, setDeleteCertainty] = useState(false)
     const [openNode, setOpenNode] = useState(true)
     const [hoveredNode, setHoveredNode] = useState(null)
-    const [stopEngine, setStopEngine] = useState(false)
     const [coords, setCoords] = useState({x: 0, y: 0});
     const [globalCoords, setGlobalCoords] = useState({x: 0, y: 0});
     const [graphData, setGraphData] = useState()
     const [modalHovered, setModalHovered] = useState(false)
-    const [presentPosition, setPresentPosition] = useState({})
     const [NodePosition, setNodePosition] = React.useState()
+    const [NodeHierachy, setNodeHierachy] = React.useState(0)
     const [currentNode, setCurrentNode] = React.useState({id: "mmm"})
     const [createConnection, setCreateConnection] = React.useState(false)
     const [CurrentHovered, setCurrentHovered] = React.useState({id: "mmam"})
-    const [newConnection, setNewConnection] = React.useState({id: "", name: "", isProps: false, size: "" })
-    
-
-
-    const OpenModal = ()=>{
-      const finalCoor = JSON.parse(localStorage.getItem("mode"))
-      return ReactDOM.createPortal(<div className="ml-4 p-4 bg-blue-300" onMouseLeave={()=>{setModalHovered(false)}} onMouseOver={()=>{setModalHovered(true)}} style={{position:"absolute", top: NodePosition.y, left: NodePosition.x}}>
-        Portal
-      </div>, document.body)
-    }
+    const [newConnection, setNewConnection] = React.useState({id: "", name: "", isProps: false, size: "" , info: "", linkDetails: ""})
+  
 
     const setPosition = (e) => {
       let position = {};
@@ -41,42 +38,10 @@ function ForceGraph({datad, setRenderData}){
       setNodePosition(position);
     };
 
-    const handleWindowMouseMove = event => {
-      setGlobalCoords({
-        x: event.screenX,
-        y: event.screenY,
-      });
-    };
 
-    const ModalPopup = ()=>{
-        return  ReactDOM.createPortal(<div className="bg-red-500 text-lg h-fit w-32" onMouseOver={()=>{
-          setModalHovered(true)
-        }}
-        onMouseLeave={
-          ()=>{
-            setModalHovered(false)
-          }
-        }
-        style={{
-          position: "absolute", left: coords.x + "px", top: coords.y + "px"
-        }}>Hey</div>, document.body)
-    }
 
-  const onNodeHover = (node)=>{
-    if(node){
-      console.log("hry")
-      setHoveredNode(node)
-      console.log(hoveredNode)
-
-    }
-    else{
-      setHoveredNode(null)
-    }
-  
-    
-  }
     useEffect(() => {
-   
+      setGraphData(datad)
       const handleWindowMouseMove = event => {
         setGlobalCoords({
           x: event.screenX,
@@ -86,7 +51,7 @@ function ForceGraph({datad, setRenderData}){
    
    
       window.addEventListener('mousemove', handleWindowMouseMove);
-      setGraphData(datad)
+    
       return () => {
         window.removeEventListener('mousemove', handleWindowMouseMove);
       };
@@ -94,25 +59,16 @@ function ForceGraph({datad, setRenderData}){
     }, []);
     
   
-    const handleMouseMove = event => {
-      setCoords({
-        x: event.clientX - event.target.offsetLeft,
-        y: event.clientY - event.target.offsetTop,
-      });
-      
-    };
   
-   
-    const Ricon = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm.5 5H8v10h2v-3h2.217l2.18 3h2.472l-2.55-3.51a3.5 3.5 0 0 0-1.627-6.486l-.192-.004zm0 2a1.5 1.5 0 0 1 1.493 1.356L14 10.5l-.007.144a1.5 1.5 0 0 1-1.349 1.35L12.5 12H10V9h2.5z"/></svg>
 
-    return <div className="w-screen h-screen">
-        <Header></Header>
-        <div className="grid grid-cols-4 grid-rows-4 grid-flow-col h-5/6 gap-4 w-full">
+    return <div className="w-full h-full">
+        <div className="">
             <div className="col-start-1 col-end-3 p-6 row-span-3 h-full w-full relative" onMouseMove={(e)=>{setPosition(e)}}>
             <ForceGraph2D graphData={graphData}  
            enableNodeDrag={true} 
            ref={fgRef}
-           
+           width={600}
+           height={600}
            linkColor= "green"
 
            linkWidth={"4"}
@@ -132,7 +88,7 @@ function ForceGraph({datad, setRenderData}){
              }
              return 0
            }}
-           
+        
            onNodeClick={(node)=>{
              setCreateConnection(true)
              setCurrentNode(node)
@@ -141,47 +97,35 @@ function ForceGraph({datad, setRenderData}){
             localStorage.setItem("mode", JSON.stringify(NodePosition))
            }}
 
-            onNodeDrag={(node) => {
-                node.fx = node.x;
-                node.fy = node.y;
-         
-              }}
-              onNodeDragEnd={(node) => {
-                node.fx = node.x;
-                node.fy = node.y;
-            
-           
-              }} 
+            onNodeDragEnd = {(node)=>{
+              setGraphData(prev => prev)
+              setRenderData(prev => prev)
+            }}
 
-              d3VelocityDecay={1}
-
-              d3AlphaDecay={1}
-              
-              
-              onEngineStop={() => {
-                if (!stopEngine) {
-                  setStopEngine(true);
-                }
-              }}
+            d3VelocityDecay={1}
             
-              backgroundColor="#F5F5F5"
+            backgroundColor="#F5F5F5"
             linkDirectionalParticleSpeed={() => 1 * 0.01} autoPauseRedraw={false} nodeLabel={(node)=>{
-              return node.id
+              if(node.info){
+                return node.info
+              }
+              return "No info available :["
             }} nodeVisibility={true}
-
+            
            linkLabel={(link)=>{
-             if(link.info){
-               return link.info
+             if(link.relDetails){
+               return link.relDetails
              }
              return "link active"
            }}
 
+           
             nodeCanvasObject={(node, ctx)=>{
           
-             let size = 13
+             let size = 6
               const newImg = new Image()
               newImg.src = ReactImg
-              newImg.width = "60px"
+              newImg.width = "20px"
               if(node.val){
                if(node.val === "1"){
                 size = size * parseInt(node.val) * 1.5
@@ -210,13 +154,16 @@ function ForceGraph({datad, setRenderData}){
                 size
               )
             const  YTranslate = node.val === "3" ?node.y + 10 + size/3 :node.y + 10 + size/5
-              ctx.fillText(node.id, node.x, YTranslate)
+              ctx.fillText(node.name, node.x, YTranslate)
        
            
               
             }}
-           
+           cooldownTicks={0}
+           warmupTicks={0}
             cooldownTime={7000}
+
+            
 
           
             
@@ -230,7 +177,9 @@ function ForceGraph({datad, setRenderData}){
                    </button>
 
                    <button className="bg-gray-700 text-white p-2 text-sm rounded-lg mb-2 ml-2" onClick={()=>{
-                     setNewConnection({name: "", id: "", size: "", isProps: false})
+                      setDeletePopup(false)
+                      setDeleteCertainty(false)
+                     setNewConnection({name: "", id: "", size: "", isProps: false, info: "", linkDetails: ""})
                      setCreateConnection(prev => !prev)}}>
                        {createConnection ? "Create New Connection" : "Close Connection menu"}
                    </button>
@@ -238,9 +187,7 @@ function ForceGraph({datad, setRenderData}){
                    <div  className= {`${createConnection && "hidden"} text-black`}>
                    <input placeholder="new component name" className="rounded-lg mb-2 p-1" value={newConnection.name} onChange={(e)=>{setNewConnection(prev => ({...prev, name:e.target.value}))}}>
                    </input>
-                   <input placeholder="new component id" className="rounded-lg mb-2 p-1 ml-2" value={newConnection.id} onChange={(e)=>{setNewConnection(prev => {return {...prev, id:e.target.value}})}}>
-
-                   </input>
+                
                    <div className="flex">
                      <button className={`p-1 bg-white mr-2 text-xs rounded-lg hover:bg-green-300 hover:text-white ${newConnection.size === "1" ? "bg-green-400 text-white" : ""}`} onClick={()=>{
                        setNewConnection(prev => {
@@ -269,45 +216,269 @@ function ForceGraph({datad, setRenderData}){
                    </div>
 
                    <div className="mt-2 mb-2">
-                     <button>
+                  
                        <button className={`bg-red-500 p-2 text-white rounded-lg ${newConnection.isProps && "bg-green-400"}`} onClick={()=>{
                          setNewConnection(prev => {
                            const isPropsBool = newConnection.isProps
                            return {...prev, isProps: !isPropsBool}
                          })
                        }}>{newConnection.isProps ? "Props": "NoProps"}</button>
-                     </button>
+                    
                    </div>
 
                    <div>
-                   <textarea placeholder="component info" className="rounded-lg p-2">
+                   <textarea placeholder="component info" className="rounded-lg p-2" value={newConnection.info} onChange={(e)=>{
+                     setNewConnection(prev => ({...prev, info: e.target.value}))
+                   }}>
                      
                      </textarea>
-                     <textarea placeholder="Link Relationship" className="rounded-lg p-2 ml-2">
+                     <textarea placeholder="Link Relationship" value={newConnection.linkDetails} className="rounded-lg p-2 ml-2" onChange={(e)=>{
+                       setNewConnection(prev => ({...prev, linkDetails: e.target.value}))
+                     }}>
                      
                      </textarea>
                    </div>
-                    
-                   <button className="mt-2 p-2 bg-gray-700 rounded-lg text-white" onClick={()=>{
-                     if(newConnection.name === "" || newConnection.id === "") return
-                     if(newConnection.size === "") return
-                     setRenderData(prev => {
-                    
-                       const nodes = prev.nodes
-                       const links = prev.links
-                       setGraphData({nodes: [...nodes, {id: newConnection.id, name: newConnection.name, val: newConnection.size, info: ""}], links: [...links, {source: currentNode.id, target: newConnection.id, isProps: newConnection.isProps, recieveProps: false, relDetails: ""}]})
-                       
-                       return {nodes: [...nodes, {id: newConnection.id, name: newConnection.name, val: newConnection.size, info: ""}], links: [...links, {source: currentNode.id, target: newConnection.id,  isProps: false, recieveProps: false, relDetails: ""}]}
+                   <button className="mt-2 bg-gray-700 text-white rounded-lg p-2 mr-2" onClick={()=>{
+                     const foundIdArray = []
+                     const recursiveFinder = (foundId)=>{
+                      let presentParent = ""
+                      let presentId = foundId
+                      const nodes = graphData.nodes
+                      nodes.forEach(node => {
+                        if(node.id === presentId){
+                          if(node.childrenNode){
+                            node.childrenNode.forEach(item => {
+                              foundIdArray.push(item)
+                              recursiveFinder(item)
+                            })
+                          }
+                          else{
+                            return
+                          }
+                        }
+                        else{
+                          return
+                        }
+                      })
+                     
+                   }
+                   recursiveFinder(currentNode.id)
+                   console.log(foundIdArray)
+                   }}>
+                     Find
+                   </button>
+
+                    <button className= {`mt-2 bg-gray-700 text-white rounded-lg p-2 mr-2 ${currentNode.id === "a" && "hidden"}`} onClick={()=>{
+        
+                     if(deleteCertainty){
+                      setOpenNode(prev => !prev)
+                     }
+                     
+                     
+
+                     const foundIdArray = []
+                        const recursiveFinder = (foundId)=>{
+                         let presentId = foundId
+                         const nodes = graphData.nodes
+                         nodes.forEach(node => {
+                           if(node.id === presentId){
+                             if(node.childrenNode){
+                               node.childrenNode.forEach(item => {
+                                 foundIdArray.push(item)
+                                 recursiveFinder(item)
+                               })
+                             }
+                             else{
+                               return
+                             }
+                           }
+                           else{
+                             return
+                           }
+                         })
+                        
+                      }
+                      recursiveFinder(currentNode.id)
+
+                      console.log(foundIdArray)
+                      setDeletePopup(true)
+                      setItemsToBeDeleted(foundIdArray.length + 1)
+                     if(!deleteCertainty) return
+
+                      setRenderData(prev => {
+                        const nodes = prev.nodes
+                        const links = prev.links
+                     
+
+                        const foundIdArray = []
+                        const recursiveFinder = (foundId)=>{
+                         let presentId = foundId
+                         const nodes = graphData.nodes
+                         nodes.forEach(node => {
+                           if(node.id === presentId){
+                             if(node.childrenNode){
+                               node.childrenNode.forEach(item => {
+                                 foundIdArray.push(item)
+                                 recursiveFinder(item)
+                               })
+                             }
+                             else{
+                               return
+                             }
+                           }
+                           else{
+                             return
+                           }
+                         })
+                        
+                      }
+                      recursiveFinder(currentNode.id)
+                      console.log(foundIdArray)
+                      
+                      foundIdArray.push(currentNode.id)
+
+                      const newNodes =  nodes.filter(item => {
+                        if(item.id !== currentNode.id){
+                          return item
+                        }
+                      })
+
+                     const filteredFoundArray = newNodes.filter(node =>{
+                       if(!foundIdArray.includes(node.id)){
+                         return node
+                       }
                      })
+
+                      const newLinks = links.filter(item => {
+                        if(item.target !== currentNode.id){
+                          return item
+                        }
+                      })
+
+                      console.log(newLinks)
+                      const rendLinks = newLinks.map(link => {
+                       if(typeof(link.target == "object")){
+                         if(link.target.id !== currentNode.id && !foundIdArray.includes(link.target.id)){
+                           return link
+                         }
+                         else{
+                           return
+                         }
+                       }
+                       else{
+                         if(link.target !== currentNode.id && !foundIdArray.includes(link.target)){
+                           return link
+                         }
+                         else{
+                           return
+                         }
+                       }
+                      })
+
+                      console.log("filtered", filteredFoundArray)
+                      
+                      console.log("map",rendLinks)
+
+                      const newRendLinks = rendLinks.map(link => {
+                       if(link){
+                        if(typeof(link.source == "object")){
+                          if(currentNode.id !== link.source.id){
+                            return link
+                          }
+                          else{
+                            return
+                          }
+                        }
+                        else{
+                          if(link.source !== currentNode.id){
+                            return link
+                          }
+                          else{
+                            return
+                          }
+                        }
+                       }
+                       })
+
+                    console.log(rendLinks, "red")
+                   const filRend =   newRendLinks.filter(link =>{
+                        if(link && link.source !== currentNode.id){
+                          if(!foundIdArray.includes(link.source)){
+                            return link
+                          }
+                        }
+                      })
+                
+                      console.log("filteredLinks", filRend )
+                      setGraphData({nodes: [...filteredFoundArray], links: [...filRend]})
+                      return {nodes: [...filteredFoundArray], links: [...filRend]}
+                      })
+                    }}>
+                      delete node
+                    </button>
+
+
+
+
+                   <button className="mt-2 p-2 bg-gray-700 rounded-lg text-white" onClick={()=>{
+                     const currentId = uuid()
+                     if(newConnection.name === "" || newConnection.size === "") return
+
+
+                     setRenderData(prev => {
+                   
+                      const nodes = prev.nodes
+                      const links = prev.links
+                     const renderLinks = links.map(link =>  {
+                     return {
+                        source: typeof(link.source) == "object" ? link.source.id : link.source,
+                        target: typeof(link.target) == 'object' ? link.target.id : link.target,
+                        isProps: link.isProps,
+                        recieveProps: link.recieveProps,
+                        relDetails: link.relDetails,
+                         
+                      
+                      }
+                     })
+                    
+                      const DataTransformation = {nodes: [...nodes, {id: currentId, name: newConnection.name, val: newConnection.size, info: newConnection.info, heirachy: NodeHierachy, parents: currentNode.id}], links: [...links, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}]}
+                      const ModifiedDataNode =   DataTransformation.nodes.map(item => {
+                         console.log(item.id, currentNode.id)
+                         if(item.id === currentNode.id){
+                           if(item.childrenNode){
+                             return {...item, childrenNode: [...item.childrenNode, currentId], yams: "jdj"}
+                           }
+                           else{
+                             return {...item, childrenNode: [currentId]}
+                           }
+                         }
+                         else{
+                           return item
+                         }
+                     
+                      })
+
+                    
+                     /*  [...links, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}] */
+                      const modifiedLinks = DataTransformation.links
+                      console.log(ModifiedDataNode)
+                      setGraphData({nodes: ModifiedDataNode,  links: [...renderLinks, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}]})
+                      return {nodes: ModifiedDataNode,  links: [...renderLinks, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}]}
+                     }
+                     
+                     )
                    }}>
                      Create New component
                    </button>
                    </div>
-               
+                   <div className={`mt-2 font-bold ${deleteCertainty ? "text-green-400": "text-red-500"} ${!createConnection ? deletePopup ? "block": "hidden": "hidden"}`}>
+                    {deleteCertainty ? `Yeah, I'm sure`: `Are you sure you want to delete ${itemsToBeDeleted} item(s)?`}
+                   </div>
+                   <button onClick={()=>{setDeleteCertainty(true)}} className={`text-white p-2 ${!createConnection ? deletePopup ? "block": "hidden": "hidden"}  ${deleteCertainty ? "bg-green-400": "bg-red-500"}`}>GO ahead</button>
                 
                    
                    </div>}
-             </div>
+             </div> 
             </div>
 
           

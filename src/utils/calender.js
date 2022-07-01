@@ -3,9 +3,10 @@ import dayjs from "dayjs";
 import Day from "./day";
 
 
-export default function Calender({month}){
+export default function Calender(){
 
   const [dayObj, setDayObj] = useState(dayjs())
+  const [monthNumber, setMonthNumber] = useState(dayjs().month())
     const [CalenderYear, setCalenderYear] = useState(dayObj.year())
     const [CalenderMonth, setCalenderMonth] = useState(dayObj.month())
     console.log(`${dayObj.year()}-${dayObj.month()}-1`)
@@ -23,10 +24,10 @@ export default function Calender({month}){
     console.log(start, "could be")
     console.log(dayjs(`${dayObj.year()}-${dayObj.month()}-1`, "YYYY-MM-DD").startOf("month").day(), "start")
     const CalenderMonthDictionary = {
-      1: "Jan", 2: "Feb", 3: "March", 4:"April", 5: "May", 6:"June", 7: "July", 8: "August", 9: "Sept", 10: "Oct", 11: "Nov", 12: "Dec"
+      0: "Jan", 1: "Feb", 2: "March", 3:"April", 4: "May", 5:"June", 6: "July", 7: "August", 8: "Sept", 9: "Oct", 10: "Nov", 11: "Dec"
     }
     let Weeksindex = 1 
-    const CalenderWeeks = ["Mon", "Tues", "Weds", "Thur", "Fri", "Sat", "Sund"]
+    const CalenderWeeks = ["M", "T", "W", "T", "F", "Sa", "S"]
     
     const today = dayjs().set('year', CalenderYear);
     const [openEvent, setEvent] = React.useState(false)
@@ -52,20 +53,20 @@ export default function Calender({month}){
         let dateofMonth = 0
     
 
-    return <div className="max-w-4xl flex-col">
-     <div className="max-w-4xl">
-      <div className="flex justify-center items-center">
-          <button className="" onClick={()=>{
+    return <div className="max-w-4xl flex-col font-Tilt border border-gray-300">
+     <div className="max-w-4xl font-bold">
+      <div className="flex justify-center items-center mb-4">
+          <button className="text-indigo-400 font-bold" onClick={()=>{
             setDayObj(dayObj.add(1, "year"))
             setCalenderYear(prev => prev + 1)}}>
             +
           </button>
 
-          <div>
+          <div className="text-xs ml-2 mr-2">
             {CalenderYear}
           </div>
 
-          <button onClick={()=>{
+          <button className="text-indigo-400 font-bold" onClick={()=>{
             setDayObj(dayObj.subtract(1, "year"))
             setCalenderYear(prev => prev - 1)}}>
             -
@@ -73,23 +74,30 @@ export default function Calender({month}){
       </div>
 
       <div className="flex flex-col justify-center items-center">
-        <div>
-          {dayObj.month()}
+        <div className="flex justify-center items-center">
+          <button className="p-2 px-[16px] hover:bg-indigo-500 text-white bg-indigo-300 rounded-full mr-3 font-bold" onClick={()=>{
+         
+            setDayObj(dayObj.add(1, "month"))
+          }}>
+            +
+          </button>
+        <div className="text-indigo-400 font-bold">
+          {CalenderMonthDictionary[dayObj.month()]}
         </div>
-        <input type="number" value={dayObj.month()} max={11} min={0} onChange={(e)=>{
-          setDayObj(dayObj.month(e.target.value))
-        }}></input>
+        <button className="p-2 px-4 text-white bg-indigo-300 rounded-full ml-3 font-bold hover:bg-indigo-500" onClick={()=>{
+          setDayObj(dayObj.subtract(1, "month"))
+        }}>
+          -
+        </button>
+        </div>
       </div>
 
-      <div>
-        <button>add</button>
-        <button>sub</button>
-      </div>
+    
 
-        <div className="grid grid-cols-7 mt-2 rounded-md border overflow-hidden p-2"> 
+        <div className="grid grid-cols-7 mt-2 overflow-hidden border-b border-t"> 
  {CalenderWeeks.map((weekDay) => {
    Weeksindex = Weeksindex + 1
-   return  <div className="" key={`weekday_${Weeksindex}`}>
+   return  <div className="m-4 text-gray-500 text-xs" key={`weekday_${Weeksindex}`}>
                 {weekDay}
             </div>
  })}
@@ -104,7 +112,7 @@ export default function Calender({month}){
               const today = d.getDate(startOfMonth, day);
         
               return (
-                  <Day key={`${dateofMonth}-${CalenderMonth}-${CalenderYear}`} day={day} startOfThisMonth={dayjs(`${dayObj.year()}-${dayObj.month() + 1}-1`, "YYYY-MM-DD").startOf("month").day()} dateofMonth={dateofMonth} month={CalenderMonth} year={CalenderYear} today={today}/>
+                  <Day key={`${dateofMonth}-${dayObj.month()}-${CalenderYear}`} day={day} startOfThisMonth={dayjs(`${dayObj.year()}-${dayObj.month() + 1}-1`, "YYYY-MM-DD").startOf("month").day()} dateofMonth={dateofMonth} month={dayObj.month()} year={CalenderYear} today={today}/>
               )
             })}
     </div>
@@ -112,22 +120,3 @@ export default function Calender({month}){
      
 }
 
-
-/*      <div key={`${dateofMonth}-${month}-${year}`}>
-                <button
-              className={`text-center hover:bg-green-200 ${dateofMonth === key && "text-green-500"}`}
-              key={`${dateofMonth}-${month}-${year}`}
-              onClick = {()=>{
-
-              }}
-            >
-              {day + 1}
-            </button>
-            <div className={`bg-gray-200 -mt-2 z-50 hidden`}>
-                Hey
-            </div>
-
-           </div>*/
-/*  */
-
-/*  dateofMonth = dateofMonth + 1 */
