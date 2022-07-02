@@ -95,6 +95,11 @@ links: []}
             </div>
             {notes ? <RichEditorExample saveToLocal={saveToLocal} noteName={noteName}></RichEditorExample>: 
             <div className='mt-4'>
+                <div className="bg-blue-100 border-blue-500 hidden"></div>
+          <div className="bg-red-100 border-red-500 hidden"></div>
+          <div className="bg-green-100 border-green-500 hidden"></div>
+          <div className="bg-indigo-100 border-indigo-500 hidden"></div>
+          <div className="bg-yellow-100 border-yellow-500 hidden"></div>
               <input placeholder='Input Name of New Note' className='font-Tilt text-sm p-2 border border-indigo-200 mr-2 placeholder:text-xs' onChange={(e)=>{setNoteName(e.target.value)}}></input>
               <button className='font-Tilt text-sm border border-black p-2' onClick={()=>{
                 if(!noteName) return
@@ -102,7 +107,16 @@ links: []}
               }>Create New Note</button>
               <div className='h-48 overflow-auto mt-2'>
               {Object.keys(oldNotes).map(item => {
-               return <div key={uuid()} className="flex justify-between font-Tilt">
+                let localColor
+                if(JSON.parse(localStorage.getItem("noteColors"))[item]){
+                  localColor = JSON.parse(localStorage.getItem("noteColors"))[item]
+                }
+                else{
+                  localColor = "blue"
+                }
+                
+               return <div key={uuid()} className={`flex justify-between font-Tilt border-l-4 p-1 mb-1 border-${localColor}-500`}>
+                 
                  <button id={item} onClick={(e)=>{
                    setNoteName(e.target.id)
                    setNotes(prev => !prev)
@@ -116,7 +130,7 @@ links: []}
                      
                    })
 
-                   console.log(Object.fromEntries(filteredOldNotes))
+                 
                    localStorage.setItem("notes", JSON.stringify(Object.fromEntries(filteredOldNotes)))
                    setOldNotes(JSON.parse(localStorage.getItem("notes")))
               
@@ -134,10 +148,7 @@ links: []}
      
 
     </div>
-{/*     <ForceGraph datad={renderData} setRenderData={setRenderData} timesRan={timesRan} setTimeRan={setTimeRan} setGraphRan={setGraphRan}></ForceGraph> */}
-    
-{/*     <Sound></Sound>
-    <RichEditorExample></RichEditorExample> */}
+
     
   </div>
   );

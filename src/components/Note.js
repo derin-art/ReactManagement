@@ -8,13 +8,13 @@ class RichEditorExample extends React.Component {
       super(props);
       let isNoteAvailable = false
       let noteLocalColor
-
+      
       const content = window.localStorage.getItem("notes")
       if(JSON.parse(content)[this.props.noteName]){
         isNoteAvailable = true
       }
 
-      if(JSON.parse(localStorage.getItem("noteColors"))[this.props.noteName]){
+      if(JSON.parse(localStorage.getItem("noteColors"))){
         noteLocalColor = JSON.parse(localStorage.getItem("noteColors"))[this.props.noteName]
       }
       else{

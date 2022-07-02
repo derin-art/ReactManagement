@@ -9,20 +9,15 @@ export default function Calender(){
   const [monthNumber, setMonthNumber] = useState(dayjs().month())
     const [CalenderYear, setCalenderYear] = useState(dayObj.year())
     const [CalenderMonth, setCalenderMonth] = useState(dayObj.month())
-    console.log(`${dayObj.year()}-${dayObj.month()}-1`)
+  
     const [virtualMonth, setVirtualMonth] = React.useState(dayjs(`${dayObj.year()}-${dayObj.month()}-1`, "YYYY-MM-DD"))
 
-    console.log(dayjs(`${dayObj.year()}-${dayObj.month()}-1`, "YYYY-MM-DD").startOf("month").day(), "mee")
+    
 
     const realStart = dayjs(`${dayObj.year()}-${dayObj.month()}-1`, "YYYY-MM-DD").startOf("month").day()
+        
 
-    const [start, setStart] = useState(realStart)
-
-     
-   
-    const startOfThisMonth = virtualMonth.startOf(`month`).day()
-    console.log(start, "could be")
-    console.log(dayjs(`${dayObj.year()}-${dayObj.month()}-1`, "YYYY-MM-DD").startOf("month").day(), "start")
+  
     const CalenderMonthDictionary = {
       0: "Jan", 1: "Feb", 2: "March", 3:"April", 4: "May", 5:"June", 6: "July", 7: "August", 8: "Sept", 9: "Oct", 10: "Nov", 11: "Dec"
     }
@@ -30,15 +25,11 @@ export default function Calender(){
     const CalenderWeeks = ["M", "T", "W", "T", "F", "Sa", "S"]
     
     const today = dayjs().set('year', CalenderYear);
-    const [openEvent, setEvent] = React.useState(false)
+  
 
     const d = new Date()
     const startWeek = today.startOf("Week");
-    let week = 0
-    const weekDays = Array.from(new Array(7).keys()).map((index) => {
-        return startWeek.add(index, "day");
-      });
-    
+ 
     
 
       
@@ -46,10 +37,9 @@ export default function Calender(){
         const startOfMonth = today.set("month", CalenderMonth).startOf("month");
         const startOfFirstWeek = startOfMonth.startOf("isoWeek");
         const daysToFirstDay = startOfMonth.diff(startOfFirstWeek, "day");
-        const daysToPrepend = Array.from(new Array(daysToFirstDay).keys());
+       
         const daysInMonth = Array.from(new Array(startOfMonth.daysInMonth()).keys())
 
-        let totalDate = 0
         let dateofMonth = 0
     
 

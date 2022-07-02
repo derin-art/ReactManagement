@@ -104,7 +104,7 @@ export default function Day({day, dateofMonth, month, year, today, startOfThisMo
           
               {allActivities && allActivities.map(item => (
                   <p key={uuid()} className={`flex justify-between items-center text-xs ${item.completed && "line-through"} p-2`}>{item.text}
-                  <button className="border border-black bg-black text-white font-bold p-1" id={item.text} onClick={(e)=>{
+                  <button className="border border-black bg-black text-white ml-2 font-bold p-1" id={item.text} onClick={(e)=>{
                     const newNew =  allActivities.map(todo => {
                           if(todo.text === e.target.id){
                               return {...todo, completed: true}

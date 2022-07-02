@@ -101,12 +101,11 @@ function ForceGraph({datad, setRenderData,  timesRan}){
           <div className="relative">
           
            <div className="absolute -left-32">
-           <div className="font-Tilt fixed z-50 px-8 pb-8" onMouseOver={()=>{setPreviousMenuHover(true)}} onMouseLeave={()=>{setPreviousMenuHover(false)}}>{saveIcon}
+           <div className="font-Tilt fixed z-50 px-8 pb-8 rounded-lg hover:shadow-lg" onMouseOver={()=>{setPreviousMenuHover(true)}} onMouseLeave={()=>{setPreviousMenuHover(false)}}>{saveIcon}
             {Object.keys(localModelsState).length > 0 && Object.keys(localModelsState).map(item =>{
               return <div className={`flex justify-between block animate-fadeIn mt-2 ${!previousMenuHover && "hidden"}`} key={item}>
                 <button key={item} id={item} onClick={()=>{
                   const newLocalModels = JSON.parse(localStorage.getItem("models"))
-                  console.log(newLocalModels[item])
                   setRenderData(prev => {
                     const links = newLocalModels[item].links
                     const modefiedLinks = links.map(link => {
@@ -178,7 +177,6 @@ function ForceGraph({datad, setRenderData,  timesRan}){
              setCreateConnection(true)
              setCurrentNode(node)
              setOpenNode(false)
-             console.log(node, "current")
             localStorage.setItem("mode", JSON.stringify(NodePosition))
            }}
 
@@ -391,7 +389,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
                         
                       }
                       recursiveFinder(currentNode.id)
-                      console.log(foundIdArray)
+               
                       
                       foundIdArray.push(currentNode.id)
 
@@ -413,7 +411,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
                         }
                       })
 
-                      console.log(newLinks)
+                
                       const rendLinks = newLinks.map(link => {
                        if(typeof(link.target == "object")){
                          if(link.target.id !== currentNode.id && !foundIdArray.includes(link.target.id)){
@@ -433,9 +431,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
                        }
                       })
 
-                      console.log("filtered", filteredFoundArray)
-                      
-                      console.log("map",rendLinks)
+              
 
                       const newRendLinks = rendLinks.map(link => {
                        if(link){
@@ -458,7 +454,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
                        }
                        })
 
-                    console.log(rendLinks, "red")
+                  
                    const filRend =   newRendLinks.filter(link =>{
                         if(link && link.source !== currentNode.id){
                           if(!foundIdArray.includes(link.source)){
@@ -467,7 +463,6 @@ function ForceGraph({datad, setRenderData,  timesRan}){
                         }
                       })
                 
-                      console.log("filteredLinks", filRend )
                       setGraphData({nodes: [...filteredFoundArray], links: [...filRend]})
                       return {nodes: [...filteredFoundArray], links: [...filRend]}
                       })
@@ -519,7 +514,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
                     
                      /*  [...links, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}] */
       
-                      console.log(ModifiedDataNode)
+                     
                       setGraphData({nodes: ModifiedDataNode,  links: [...renderLinks, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}]})
                       return {nodes: ModifiedDataNode,  links: [...renderLinks, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}]}
                      }
@@ -546,32 +541,3 @@ function ForceGraph({datad, setRenderData,  timesRan}){
 
 export default memo(ForceGraph)
 
-/* <button className="mt-2 bg-gray-700 text-white rounded-lg p-2 mr-2" onClick={()=>{
-                     const foundIdArray = []
-                     const recursiveFinder = (foundId)=>{
-                      let presentParent = ""
-                      let presentId = foundId
-                      const nodes = graphData.nodes
-                      nodes.forEach(node => {
-                        if(node.id === presentId){
-                          if(node.childrenNode){
-                            node.childrenNode.forEach(item => {
-                              foundIdArray.push(item)
-                              recursiveFinder(item)
-                            })
-                          }
-                          else{
-                            return
-                          }
-                        }
-                        else{
-                          return
-                        }
-                      })
-                     
-                   }
-                   recursiveFinder(currentNode.id)
-                   console.log(foundIdArray)
-                   }}>
-                     Find
-                   </button>   */
