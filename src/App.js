@@ -72,7 +72,7 @@ links: []}
 
       <div className='flex flex-col h-full w-2/3 mr-2'>
         <div className='bg-white h-full w-full mb-2 rounded-xl p-4 shadow-lg shadow-indigo-200 transition-shadow ease-in-out delay-150 duration-300 hover:shadow-indigo-300'>
-        <div className='p-3 bg-black text-white font-Tilt mb-3 text-2xl font-bold'>Calender</div>
+        <div className='p-3 bg-black text-white font-Tilt mb-3 text-2xl font-bold'>Calendar</div>
         <Calender></Calender>
         </div>
     
