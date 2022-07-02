@@ -20,7 +20,9 @@ export default function Day({day, dateofMonth, month, year, today, startOfThisMo
    const [allActivities, setAllActivities] = useState(specificActivities) 
 
    const [openEvent, setOpenEvent] = React.useState(false)
-   
+   const returnCheckIcon =(id)=>{
+       return <svg xmlns="http://www.w3.org/2000/svg" id={id} viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-.997-4L6.76 11.757l1.414-1.414 2.829 2.829 5.656-5.657 1.415 1.414L11.003 16z"/></svg>
+   }
    
     return <div className={` ${day === 0 ? `col-start-${startOfThisMonth}  col-end-${startOfThisMonth + 1}`:""}`}>
     <div className="hidden">
@@ -85,10 +87,24 @@ export default function Day({day, dateofMonth, month, year, today, startOfThisMo
                 </button>
             
             </div>
+            <button className="bg-indigo-400 text-white p-2 mt-2" onClick={()=>{
+                const newArray = allActivities.filter(item => {
+                    if(!item.completed){
+                        return item
+                    }
+                    else{
+                        return false
+                    }
+                })
+                const localActivities =  JSON.parse(localStorage.getItem("activities"))
+                localStorage.setItem("activities", JSON.stringify({...localActivities, [actualDate]: newArray}))
+                setAllActivities(JSON.parse(localStorage.getItem("activities"))[actualDate])                
+            }}>Delete All completed</button>
             <div className="mt-4 text-xs">
+          
               {allActivities && allActivities.map(item => (
-                  <p key={uuid()} className={`flex justify-between ${item.completed && "line-through"}`}>{item.text}
-                  <button id={item.text} onClick={(e)=>{
+                  <p key={uuid()} className={`flex justify-between items-center text-xs ${item.completed && "line-through"} p-2`}>{item.text}
+                  <button className="border border-black bg-black text-white font-bold p-1" id={item.text} onClick={(e)=>{
                     const newNew =  allActivities.map(todo => {
                           if(todo.text === e.target.id){
                               return {...todo, completed: true}
@@ -101,7 +117,7 @@ export default function Day({day, dateofMonth, month, year, today, startOfThisMo
                     localStorage.setItem("activities", JSON.stringify({...localActivities, [actualDate]: newNew}))
                     setAllActivities(JSON.parse(localStorage.getItem("activities"))[actualDate])
                   }}>
-                      Done
+                    completed
                   </button>
                   </p>
               ))}

@@ -6,6 +6,9 @@ module.exports = {
     extend: {
       fontFamily: {
         Tilt: ["Tilt", "san-serif"]
+      },
+      animation: {
+        fadeIn: "fadeIn 0.5s ease-in-out",
       }
     },
   },

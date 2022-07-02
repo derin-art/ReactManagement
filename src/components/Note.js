@@ -7,14 +7,23 @@ class RichEditorExample extends React.Component {
     constructor(props) {
       super(props);
       let isNoteAvailable = false
-
+      let noteLocalColor
 
       const content = window.localStorage.getItem("notes")
       if(JSON.parse(content)[this.props.noteName]){
         isNoteAvailable = true
       }
 
-      this.state = {editorState: isNoteAvailable ? EditorState.createWithContent(convertFromRaw(JSON.parse(content)[this.props.noteName])) :EditorState.createEmpty(), colorCode: "yellow"};
+      if(JSON.parse(localStorage.getItem("noteColors"))[this.props.noteName]){
+        noteLocalColor = JSON.parse(localStorage.getItem("noteColors"))[this.props.noteName]
+      }
+      else{
+        noteLocalColor = "blue"
+      }
+
+     
+
+      this.state = {editorState: isNoteAvailable ? EditorState.createWithContent(convertFromRaw(JSON.parse(content)[this.props.noteName])) :EditorState.createEmpty(), colorCode: noteLocalColor};
 
       this.focus = () => this.refs.editor.focus();
       this.onChange = (editorState) => {
@@ -86,11 +95,23 @@ class RichEditorExample extends React.Component {
           className += ' RichEditor-hidePlaceholder';
         }
       }
+      const saveColor = (color)=>{
+        let localColors
+        if(!JSON.parse(localStorage.getItem("noteColors"))){
+          localStorage.setItem("noteColors",JSON.stringify({}))
+          localColors = JSON.parse(localStorage.getItem("noteColors"))
+        }
+        else{
+          localColors = JSON.parse(localStorage.getItem("noteColors"))
+        }
+        localStorage.setItem("noteColors", JSON.stringify({...localColors, [this.props.noteName]: color}))
+        
+      }
     
       return (
-        <div className="RichEditor-root overflow-x-hidden overflow-y-hidden p-2 max-w-[400px] w-[400px] max-h-[500px]" >
+        <div className="RichEditor-root overflow-x-hidden overflow-y-hidden p-2 max-w-[370px] w-[400px] max-h-[500px]" >
              <div className="relative">
-            <div className="absolute top-2 flex flex-col bg-gray-100 z-50 w-[367px] p-1">
+            <div className="absolute top-2 flex flex-col bg-white z-50 w-[400px] p-1">
             <BlockStyleControls
             editorState={editorState}
             onToggle={this.toggleBlockType}
@@ -99,16 +120,29 @@ class RichEditorExample extends React.Component {
             editorState={editorState}
             onToggle={this.toggleInlineStyle}
           />
-            <div className="flex items-center justify-center text-xs font-Tilt">Color code for organization 
-          <button className="w-4 h-4 ml-2 bg-blue-500" onClick={()=>{this.setState({colorCode: "blue"})}}>
+            <div className="flex items-center justify-center text-xs font-Tilt">
+              Choose your note's theme
+          <button className="w-4 h-4 ml-2 bg-blue-500" onClick={()=>{
+            this.setState({colorCode: "blue"})
+            saveColor("blue")
+            }}>
           </button>
-          <button className="w-4 h-4 ml-2 bg-red-500" onClick={()=>{this.setState({colorCode: "red"})}}>
+          <button className="w-4 h-4 ml-2 bg-red-500" onClick={()=>{
+            this.setState({colorCode: "red"})
+            saveColor("red")
+            }}>
           </button>
-          <button className="w-4 h-4 ml-2 bg-green-500" onClick={()=>{this.setState({colorCode: "green"})}} >
+          <button className="w-4 h-4 ml-2 bg-green-500" onClick={()=>{this.setState({colorCode: "green"})
+          saveColor("green")
+        }} >
           </button>
-          <button className="w-4 h-4 ml-2 bg-yellow-500" onClick={()=>{this.setState({colorCode: "yellow"})}}>
+          <button className="w-4 h-4 ml-2 bg-yellow-500" onClick={()=>{this.setState({colorCode: "yellow"})
+          saveColor("yellow")
+        }}>
           </button>
-          <button className="w-4 h-4 ml-2 bg-indigo-500" onClick={()=>{this.setState({colorCode: "indigo"})}}>
+          <button className="w-4 h-4 ml-2 bg-indigo-500" onClick={()=>{this.setState({colorCode: "indigo"})
+          saveColor("indigo")
+        }}>
           </button>
           </div>
             </div>
@@ -119,7 +153,7 @@ class RichEditorExample extends React.Component {
           <div className="bg-green-100 border-green-500 hidden"></div>
           <div className="bg-indigo-100 border-indigo-500 hidden"></div>
           <div className="bg-yellow-100 border-yellow-500 hidden"></div>
-          <div className={`${className} bg-${this.state.colorCode}-100 max-h-[400px] overflow-x-hidden -z-10 pt-24 overflow-y-auto border-l-4 border-${this.state.colorCode}-500 p-2 `} onClick={this.focus}>
+          <div className={`${className} bg-${this.state.colorCode}-100 max-h-[700px] overflow-x-hidden -z-10 pt-24 overflow-y-auto border-l-4 border-${this.state.colorCode}-500 p-2 `} onClick={this.focus}>
             <Editor
               blockStyleFn={getBlockStyle}
               customStyleMap={styleMap}

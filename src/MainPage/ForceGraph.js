@@ -12,13 +12,16 @@ import uuid from "draft-js/lib/uuid";
 function ForceGraph({datad, setRenderData,  timesRan}){
   let localModels
 
-  if(JSON.parse(localStorage.getItem("models")) === {}){
+  if(JSON.parse(localStorage.getItem("models")) === null){
      localStorage.setItem("models", JSON.stringify({}))
   }
 
   localModels = JSON.parse(localStorage.getItem("models"))
 
     const fgRef = useRef();
+    const [currentModel, setCurrentModel] = useState("default Model")
+    const [isSaved, setIsSaved] = useState(false)
+    const [previousMenuHover, setPreviousMenuHover] = useState(false)
     const [modelName, setModelName] = useState("")
     const [localModelsState, setLocalModelsState] = useState(localModels)
     const [itemsToBeDeleted, setItemsToBeDeleted] = useState(1)
@@ -61,7 +64,10 @@ function ForceGraph({datad, setRenderData,  timesRan}){
 
     }, []);
     
-  
+    const returnDeleteIcon = (id)=>{
+      return <svg xmlns="http://www.w3.org/2000/svg" id={id} viewBox="0 0 24 24" width="20" height="20"><path fill="none" d="M0 0h24v24H0z"/><path d="M17 6h5v2h-2v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8H2V6h5V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v3zm1 2H6v12h12V8zm-9 3h2v6H9v-6zm4 0h2v6h-2v-6zM9 4v2h6V4H9z"/></svg>
+    }
+    const saveIcon = <svg xmlns="http://www.w3.org/2000/svg" className='' viewBox="0 0 24 24" width="32" height="32"><path fill="none" d="M0 0h24v24H0z"/><path d="M13.414 5H20a1 1 0 0 1 1 1v1H3V4a1 1 0 0 1 1-1h7.414l2 2zM3.087 9h17.826a1 1 0 0 1 .997 1.083l-.834 10a1 1 0 0 1-.996.917H3.92a1 1 0 0 1-.996-.917l-.834-10A1 1 0 0 1 3.087 9z"/></svg>
   
 
     return <div className="w-full h-full">
@@ -71,23 +77,76 @@ function ForceGraph({datad, setRenderData,  timesRan}){
       <div className='bg-black text-white font-Tilt font-bold text-2xl p-3 w-full'>ReactModels</div>
         </div>
         <div className="flex justify-between p-1 pb-0">
-          <div>
+          <div className="flex items-start">
           <input className="border font-Tilt border-indigo-200 placeholder:font-Tilt mr-4 p-2" value={modelName} onChange={(e)=>{
+            setIsSaved(false)
             setModelName(e.target.value)
         
           }} type="text" placeholder="input Model name"></input>
+         
           <button className="font-Tilt border border-black p-2" onClick={()=>{
             if(!modelName) return
             let localModels = JSON.parse(localStorage.getItem("models"))
             localModels = {...localModels, [modelName]: graphData}
             localStorage.setItem("models", JSON.stringify(localModels))
-
+            setLocalModelsState(JSON.parse(localStorage.getItem("models")))
+            if(JSON.parse(localStorage.getItem("models"))[modelName]){
+              setIsSaved(true)
+            }
+            
           }}>Save</button>
+          <p className="font-Tilt p-2 font-bold text-indigo-300"><span className="text-black">Current Model :</span> {currentModel}</p>
+          
           </div>
-          <div>
-            <div className="font-Tilt">Previous Models
-
+          <div className="relative">
+          
+           <div className="absolute -left-32">
+           <div className="font-Tilt fixed z-50 px-8 pb-8" onMouseOver={()=>{setPreviousMenuHover(true)}} onMouseLeave={()=>{setPreviousMenuHover(false)}}>{saveIcon}
+            {Object.keys(localModelsState).length > 0 && Object.keys(localModelsState).map(item =>{
+              return <div className={`flex justify-between block animate-fadeIn mt-2 ${!previousMenuHover && "hidden"}`} key={item}>
+                <button key={item} id={item} onClick={()=>{
+                  const newLocalModels = JSON.parse(localStorage.getItem("models"))
+                  console.log(newLocalModels[item])
+                  setRenderData(prev => {
+                    const links = newLocalModels[item].links
+                    const modefiedLinks = links.map(link => {
+                      return {source: link.source, target: link.target, isProps: link.isProps, recieveProps: link.recieveProps, relDetails: link.relDetails}
+                    })
+                    const renderLinks = links.map(link =>  {
+                      return {
+                         source: typeof(link.source) == "object" ? link.source.id : link.source,
+                         target: typeof(link.target) == 'object' ? link.target.id : link.target,
+                         isProps: link.isProps,
+                         recieveProps: link.recieveProps,
+                         relDetails: link.relDetails,
+                          
+                       
+                       }
+                      })
+                    const nodes  = newLocalModels[item].nodes
+                    const modefiedNodes = nodes.map(node => {
+                      return {id: node.id, name: node.name, val: node.size, info: node.info, heirachy: node.heirachy, parents: node.parents}
+                    })
+                    setCurrentModel(item)
+                    setGraphData({nodes: nodes, links: [...renderLinks]})
+                    return {nodes: nodes, links: [...renderLinks]}
+                  })
+               
+                }} >{item}</button>
+                
+                
+                
+                <button id={item} className="ml-8" onClick={(e)=>{
+                 const newLocalModels = Object.entries(localModelsState).filter(([key, val]) => {
+                   return key !== e.target.id
+                  })
+                  localStorage.setItem("models", JSON.stringify(Object.fromEntries(newLocalModels)))
+                  setLocalModelsState(JSON.parse(localStorage.getItem("models")))
+                }}>{returnDeleteIcon(item)}</button>
+              </div>
+            })}
             </div>
+           </div>
           </div>
         </div>
             <ForceGraph2D graphData={graphData}  
@@ -148,7 +207,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
            
             nodeCanvasObject={(node, ctx)=>{
           
-             let size = 6
+             let size = 7
               const newImg = new Image()
               newImg.src = ReactImg
               newImg.width = "20px"
@@ -211,6 +270,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
                    </button>
                 
                    <div  className= {`${createConnection && "hidden"} text-black`}>
+                   <div className="text-xs font-Tilt text-green-400 font-bold">Size and Name input required for render</div>
                    <input placeholder="new component name" className="rounded-lg mb-2 p-1" value={newConnection.name} onChange={(e)=>{setNewConnection(prev => ({...prev, name:e.target.value}))}}>
                    </input>
                 
@@ -264,35 +324,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
                      
                      </textarea>
                    </div>
-                   <button className="mt-2 bg-gray-700 text-white rounded-lg p-2 mr-2" onClick={()=>{
-                     const foundIdArray = []
-                     const recursiveFinder = (foundId)=>{
-                      let presentParent = ""
-                      let presentId = foundId
-                      const nodes = graphData.nodes
-                      nodes.forEach(node => {
-                        if(node.id === presentId){
-                          if(node.childrenNode){
-                            node.childrenNode.forEach(item => {
-                              foundIdArray.push(item)
-                              recursiveFinder(item)
-                            })
-                          }
-                          else{
-                            return
-                          }
-                        }
-                        else{
-                          return
-                        }
-                      })
-                     
-                   }
-                   recursiveFinder(currentNode.id)
-                   console.log(foundIdArray)
-                   }}>
-                     Find
-                   </button>
+                   
 
                     <button className= {`mt-2 bg-gray-700 text-white rounded-lg p-2 mr-2 ${currentNode.id === "a" && "hidden"}`} onClick={()=>{
         
@@ -486,7 +518,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
 
                     
                      /*  [...links, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}] */
-                      const modifiedLinks = DataTransformation.links
+      
                       console.log(ModifiedDataNode)
                       setGraphData({nodes: ModifiedDataNode,  links: [...renderLinks, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}]})
                       return {nodes: ModifiedDataNode,  links: [...renderLinks, {source: currentNode.id, target: currentId, isProps: newConnection.isProps, recieveProps: false, relDetails: newConnection.linkDetails}]}
@@ -498,7 +530,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
                    </button>
                    </div>
                    <div className={`mt-2 font-bold ${deleteCertainty ? "text-green-400": "text-red-500"} ${!createConnection ? deletePopup ? "block": "hidden": "hidden"}`}>
-                    {deleteCertainty ? `Yeah, I'm sure`: `Are you sure you want to delete ${itemsToBeDeleted} item(s)?`}
+                    {deleteCertainty ? `If you're sure click the delete button`: `Are you sure you want to delete ${itemsToBeDeleted} item(s)?`}
                    </div>
                    <button onClick={()=>{setDeleteCertainty(true)}} className={`text-white p-2 ${!createConnection ? deletePopup ? "block": "hidden": "hidden"}  ${deleteCertainty ? "bg-green-400": "bg-red-500"}`}>GO ahead</button>
                 
@@ -513,3 +545,33 @@ function ForceGraph({datad, setRenderData,  timesRan}){
 }
 
 export default memo(ForceGraph)
+
+/* <button className="mt-2 bg-gray-700 text-white rounded-lg p-2 mr-2" onClick={()=>{
+                     const foundIdArray = []
+                     const recursiveFinder = (foundId)=>{
+                      let presentParent = ""
+                      let presentId = foundId
+                      const nodes = graphData.nodes
+                      nodes.forEach(node => {
+                        if(node.id === presentId){
+                          if(node.childrenNode){
+                            node.childrenNode.forEach(item => {
+                              foundIdArray.push(item)
+                              recursiveFinder(item)
+                            })
+                          }
+                          else{
+                            return
+                          }
+                        }
+                        else{
+                          return
+                        }
+                      })
+                     
+                   }
+                   recursiveFinder(currentNode.id)
+                   console.log(foundIdArray)
+                   }}>
+                     Find
+                   </button>   */

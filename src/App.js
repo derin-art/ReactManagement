@@ -7,7 +7,7 @@ import * as d3 from "d3"
 import RichEditorExample from './components/Note';
 import { ForceGraph2D} from 'react-force-graph'
 import ForceGraph from './MainPage/ForceGraph';
-import React from 'react';
+import React, { useState } from 'react';
 import Calender from './utils/calender';
 import Header from './utils/Header';
 import uuid from 'draft-js/lib/uuid';
@@ -28,7 +28,20 @@ links: []}
   else{
     allOldNotes =  JSON.parse(localStorage.getItem("notes"))
   }
+  
+  let localVoice
 
+  if( !JSON.parse(localStorage.getItem("voiceNotes"))){
+    localStorage.setItem('voiceNotes', JSON.stringify({}))
+    localVoice = JSON.parse(localStorage.getItem("voiceNotes"))
+  }
+  else{
+    localVoice =  JSON.parse(localStorage.getItem("voiceNotes"))
+  }
+  
+  const [voiceProp, setVoiceProp] = useState()
+  const [isRecorderView, setIsRecorderView] = useState(false)
+  const [localVoiceNotes, setLocalVoiceNotes] = useState(localVoice)
    const [timesRan, setTimeRan] = React.useState(1)
    const [graphRan, setGraphRan] = React.useState(false)
   const [renderData, setRenderData] = React.useState(datad)
@@ -43,6 +56,7 @@ links: []}
     }
     localStorage.setItem("notes", JSON.stringify({...newLocal, [name]: item }))
   }
+  const saveIcon = <svg xmlns="http://www.w3.org/2000/svg" className='fill-white' viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M13.414 5H20a1 1 0 0 1 1 1v1H3V4a1 1 0 0 1 1-1h7.414l2 2zM3.087 9h17.826a1 1 0 0 1 .997 1.083l-.834 10a1 1 0 0 1-.996.917H3.92a1 1 0 0 1-.996-.917l-.834-10A1 1 0 0 1 3.087 9z"/></svg>
   const backIcon = <svg xmlns="http://www.w3.org/2000/svg" className='fill-white' viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M8 7v4L2 6l6-5v4h5a8 8 0 1 1 0 16H4v-2h9a6 6 0 1 0 0-12H8z"/></svg>
   const DeleteIcon = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path fill="none" d="M0 0h24v24H0z"/><path d="M17 6h5v2h-2v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8H2V6h5V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v3zm1 2H6v12h12V8zm-9 3h2v6H9v-6zm4 0h2v6h-2v-6zM9 4v2h6V4H9z"/></svg>
 
@@ -52,12 +66,12 @@ links: []}
 
   return ( <div className='overflow-x-hidden flex flex-col h-screen w-screen p-4'>
     <div className='flex h-full w-full'>
-      <div className='bg-white h-full w-full mr-2 rounded-xl shadow-lg'>
+      <div className='bg-white h-full w-full mr-2 rounded-xl shadow-lg shadow-indigo-200 transition-shadow ease-in-out delay-150 duration-300 hover:shadow-indigo-300'>
       <ForceGraph datad={renderData} setRenderData={setRenderData} timesRan={timesRan} setTimeRan={setTimeRan} setGraphRan={setGraphRan}></ForceGraph>
       </div>
 
       <div className='flex flex-col h-full w-2/3 mr-2'>
-        <div className='bg-white h-full w-full mb-2 rounded-xl p-4 shadow-xl'>
+        <div className='bg-white h-full w-full mb-2 rounded-xl p-4 shadow-lg shadow-indigo-200 transition-shadow ease-in-out delay-150 duration-300 hover:shadow-indigo-300'>
         <div className='p-3 bg-black text-white font-Tilt mb-3 text-2xl font-bold'>Calender</div>
         <Calender></Calender>
         </div>
@@ -65,7 +79,7 @@ links: []}
       </div>
 
       <div className='h-full w-3/5 flex flex-col justify-center items-center'>
-        <div className='w-full shadow-xl h-full w-[400px] max-h-[500px] flex justify-center items-center mb-2 rounded-xl bg-white '>
+        <div className='w-full shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-shadow ease-in-out delay-150 duration-300 h-full w-[400px] max-h-full justify-center items-center mb-2 rounded-lg bg-white '>
           <div className='p-3'>
             <div className='text-lg text-white font-Tilt flex items-center justify-center'>
               <div className='w-[370px] flex justify-between bg-black p-3'>
@@ -75,7 +89,7 @@ links: []}
               setNoteName("")
               setOldNotes(JSON.parse(localStorage.getItem('notes')))
             }} className={`${!notes && "hidden"}`}>
-          {backIcon}
+          {saveIcon}
           </button>
               </div>
             </div>
@@ -115,11 +129,7 @@ links: []}
           </div>
         </div>
 
-        <div className='bg-white h-full w-full flex items-center justify-center rounded-lg shadow-xl'>
-        <button className='p-2 font-Tilt'>
-            <Sound></Sound>
-            </button>
-        </div>
+        
       </div>
      
 
