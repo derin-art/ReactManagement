@@ -108,7 +108,7 @@ links: []}
               <div className='h-48 overflow-auto mt-2'>
               {Object.keys(oldNotes).map(item => {
                 let localColor
-                if(JSON.parse(localStorage.getItem("noteColors"))[item]){
+                if(JSON.parse(localStorage.getItem("noteColors"))){
                   localColor = JSON.parse(localStorage.getItem("noteColors"))[item]
                 }
                 else{
