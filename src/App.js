@@ -48,6 +48,7 @@ links: []}
   const [oldNotes, setOldNotes] = React.useState(allOldNotes)
   const [noteName, setNoteName] = React.useState("")
   const [notes, setNotes] = React.useState(false)
+  const [Physics, setPhysics] = React.useState(1)
 
   const saveToLocal = (item, name)=>{
     const newLocal = JSON.parse(localStorage.getItem("notes"))
@@ -65,9 +66,11 @@ links: []}
   }
 
   return ( <div className='overflow-x-hidden flex flex-col h-screen w-screen p-4'>
+
     <div className='flex h-full w-full'>
+      
       <div className='bg-white h-full w-full mr-2 rounded-xl shadow-lg shadow-indigo-200 transition-shadow ease-in-out delay-150 duration-300 hover:shadow-indigo-300'>
-      <ForceGraph datad={renderData} setRenderData={setRenderData} timesRan={timesRan} setTimeRan={setTimeRan} setGraphRan={setGraphRan}></ForceGraph>
+      <ForceGraph datad={renderData} Physics={Physics} setPhysics={setPhysics} setRenderData={setRenderData} timesRan={timesRan} setTimeRan={setTimeRan} setGraphRan={setGraphRan}></ForceGraph>
       </div>
 
       <div className='flex flex-col h-full w-2/3 mr-2'>

@@ -9,7 +9,7 @@ import uuid from "draft-js/lib/uuid";
 
 
 
-function ForceGraph({datad, setRenderData,  timesRan}){
+function ForceGraph({datad, setRenderData,  timesRan, Physics, setPhysics}){
   let localModels
 
   if(JSON.parse(localStorage.getItem("models")) === null){
@@ -77,14 +77,14 @@ function ForceGraph({datad, setRenderData,  timesRan}){
       <div className='bg-black text-white font-Tilt font-bold text-2xl p-3 w-full'>ReactModels</div>
         </div>
         <div className="flex justify-between p-1 pb-0">
+          
           <div className="flex items-start">
           <input className="border font-Tilt border-indigo-200 placeholder:font-Tilt mr-4 p-2" value={modelName} onChange={(e)=>{
             setIsSaved(false)
             setModelName(e.target.value)
         
           }} type="text" placeholder="input Model name"></input>
-         
-          <button className="font-Tilt border border-black p-2" onClick={()=>{
+          <div className="flex flex-col">      <button className="font-Tilt border border-black p-2" onClick={()=>{
             if(!modelName) return
             let localModels = JSON.parse(localStorage.getItem("models"))
             localModels = {...localModels, [modelName]: graphData}
@@ -95,6 +95,17 @@ function ForceGraph({datad, setRenderData,  timesRan}){
             }
             
           }}>Save</button>
+          <button className="font-Tilt text-xs p-2 border border-black mt-2" onClick={()=>{
+            setPhysics(prev => {
+              if(prev === 1){
+                return 0.9
+              }
+              else{
+                return 1
+              }
+            })
+          }}>Set {Physics === 1 ? "Physics": "Static"} Mode</button>
+          </div>
           <p className="font-Tilt p-2 font-bold text-indigo-300"><span className="text-black">Current Model :</span> {currentModel}</p>
           
           </div>
@@ -185,7 +196,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
               setRenderData(prev => prev)
             }}
 
-            d3VelocityDecay={0.9}
+            d3VelocityDecay={Physics}
             
             
             linkDirectionalParticleSpeed={() => 1 * 0.01} autoPauseRedraw={false} nodeLabel={(node)=>{
@@ -251,8 +262,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
           
             
             ></ForceGraph2D>
-      
-          
+            
            <div>
              {!openNode &&    <div className={`absolute bg-gray-200 bg-opacity-75 p-8 font-Tilt w-fit text-white rounded-lg border-l-8 border-indigo-400 text-xs`} style={{position:"absolute", top: JSON.parse(localStorage.getItem("mode")).y - 50, left: JSON.parse(localStorage.getItem("mode")).x}}>
                   <button onClick={()=>{setOpenNode(true)}} className="bg-red-500 text-white p-1 text-sm rounded-lg mb-2">
