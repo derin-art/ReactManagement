@@ -185,7 +185,7 @@ function ForceGraph({datad, setRenderData,  timesRan}){
               setRenderData(prev => prev)
             }}
 
-            d3VelocityDecay={1}
+            d3VelocityDecay={0.9}
             
             
             linkDirectionalParticleSpeed={() => 1 * 0.01} autoPauseRedraw={false} nodeLabel={(node)=>{
@@ -242,9 +242,9 @@ function ForceGraph({datad, setRenderData,  timesRan}){
            
               
             }}
-           cooldownTicks={0}
-           warmupTicks={0}
-            cooldownTime={7000}
+           cooldownTicks={100}
+           warmupTicks={100}
+            cooldownTime={5000}
 
             
 
