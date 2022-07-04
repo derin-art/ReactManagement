@@ -106,7 +106,7 @@ function ForceGraph({datad, setRenderData,  timesRan, Physics, setPhysics}){
             })
           }}>Set {Physics === 1 ? "Physics": "Static"} Mode</button>
           </div>
-          <p className="font-Tilt p-2 font-bold text-indigo-300"><span className="text-black">Current Model :</span> {currentModel}</p>
+          <p className="font-Tilt p-2 font-bold text-indigo-300"><span className="text-black flex flex-col">Current Model :</span> {currentModel}</p>
           
           </div>
           <div className="relative">
