@@ -16,6 +16,7 @@
     "react-dom": "^18.1.0",
     "react-force-graph": "^1.41.12",
     "react-media-recorder": "^1.6.6",
+    "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react-trix": "^0.10.0",
     "react-voice-recorder": "^2.1.2",
